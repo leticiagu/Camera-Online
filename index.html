@@ -132,11 +132,12 @@
                 link.click();
             };
 
+            // Botão para apagar a foto
             const deleteButton = document.createElement('button');
             deleteButton.textContent = 'Apagar';
             deleteButton.classList.add('delete-button');
             deleteButton.onclick = () => {
-                photosContainer.removeChild(photoContainer);
+                photosContainer.removeChild(photoContainer); // Remove o container da foto
             };
 
             photoContainer.appendChild(img);
