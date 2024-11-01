@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Câmera de Monitoramento</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #282c34;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        video {
+            border: 5px solid #265499;
+            border-radius: 10px;
+            width: 640px;
+            height: 480px;
+            filter: brightness(0.9) contrast(1.1);
+        }
+        #buttons {
+            margin: 10px 0;
+        }
+        button {
+            padding: 10px;
+            margin: 5px;
+            background-color: #265499;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #265499;
+        }
+        #photos {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            max-width: 640px;
+        }
+        img {
+            width: 150px;
+            height: 113px;
+            object-fit: cover;
+            border: 2px solid #ffffff;
+            border-radius: 5px;
+        }
+        .photo-container {
+            position: relative;
+        }
+        .download-button {
+            position: absolute;
+            bottom: 5px;
+            left: 5px;
+            background-color: #265499;
+            border: none;
+            border-radius: 5px;
+            padding: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        h2 {
+            margin: 20px 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <video id="video" autoplay></video>
+    <div id="buttons">
+        <button id="capture">Tirar Foto</button>
+        <button id="toggleCamera">Trocar Câmera</button>
+    </div>
+    <h2>Fototeca</h2>
+    <div id="photos"></div>
+
+    <script>
+        let currentStream;
+        let isFrontCamera = true;
+
+        const video = document.getElementById('video');
+        const photosContainer = document.getElementById('photos');
+        const toggleCameraButton = document.getElementById('toggleCamera');
+
+        async function iniciarCamera() {
+            const constraints = {
+                video: {
+                    facingMode: isFrontCamera ? 'user' : 'environment'
+                }
+            };
+            try {
+                if (currentStream) {
+                    currentStream.getTracks().forEach(track => track.stop());
+                }
+                currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+                video.srcObject = currentStream;
+            } catch (err) {
+                console.error("Erro ao acessar a câmera: ", err);
+            }
+        }
+
+        document.getElementById('capture').addEventListener('click', () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = 640;
+            canvas.height = 480;
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imgURL = canvas.toDataURL('image/png');
+            
+            const photoContainer = document.createElement('div');
+            photoContainer.classList.add('photo-container');
+
+            const img = document.createElement('img');
+            img.src = imgURL;
+
+            const downloadButton = document.createElement('button');
+            downloadButton.textContent = 'Baixar';
+            downloadButton.classList.add('download-button');
+            downloadButton.onclick = () => {
+                const link = document.createElement('a');
+                link.href = imgURL;
+                link.download = 'foto.png';
+                link.click();
+            };
+
+            photoContainer.appendChild(img);
+            photoContainer.appendChild(downloadButton);
+            photosContainer.appendChild(photoContainer);
+        });
+
+        toggleCameraButton.addEventListener('click', () => {
+            isFrontCamera = !isFrontCamera;
+            iniciarCamera();
+        });
+
+        iniciarCamera();
+    </script>
+</body>
+</html>
