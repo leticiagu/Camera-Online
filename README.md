@@ -1,4 +1,4 @@
-# Câmera de Monitoramento
+# Câmera Online
 
 Este projeto é uma aplicação web simples que utiliza a câmera do computador para capturar imagens. Ele permite ao usuário alternar entre a câmera frontal e traseira, tirar fotos e baixar essas imagens. É uma ótima maneira de entender como usar a API de MediaDevices do navegador.
 
